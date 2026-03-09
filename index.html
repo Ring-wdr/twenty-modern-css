@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern CSS 20 Feature Lab</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a2e;
+      --line: #2a395f;
+      --txt: #e9eefb;
+      --muted: #9eb0d6;
+      --ok: #34d399;
+      --warn: #f59e0b;
+      --brand: #60a5fa;
+      --rain: 62%;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100dvh;
+      font-family: "Pretendard", system-ui, sans-serif;
+      color: var(--txt);
+      background: radial-gradient(circle at 10% 0%, #1a2340 0%, var(--bg) 42%);
+      line-height: 1.5;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 12px;
+      border-bottom: 1px solid #ffffff1f;
+      background: #020614aa;
+      backdrop-filter: blur(8px);
+      container-type: scroll-state;
+    }
+
+    @container scroll-state(stuck) {
+      header { box-shadow: 0 0 0 1px #7dd3fc inset; }
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.2rem, 1vw + 1rem, 2rem);
+      text-box-trim: both;
+      text-box-edge: cap;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      overflow: auto;
+      scroll-target-group: auto;
+      padding-bottom: 4px;
+    }
+
+    nav a {
+      text-decoration: none;
+      border: 1px solid #3f4f79;
+      color: #d4def8;
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+      font-size: .86rem;
+    }
+
+    nav a:target-current {
+      color: #021225;
+      background: #7dd3fc;
+      border-color: #bae6fd;
+    }
+
+    main {
+      width: min(1200px, 94vw);
+      margin: 14px auto 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: color-mix(in oklch, var(--panel) 90%, #1f2f57);
+      border-radius: 16px;
+      padding: 12px;
+      min-height: 180px;
+      view-transition-group: nearest;
+      animation: up .35s ease both;
+      animation-delay: calc(0.06s * sibling-index());
+    }
+
+    @keyframes up {
+      from { opacity: 0; translate: 0 8px; }
+      to { opacity: 1; translate: 0; }
+    }
+
+    h2 { margin: 0 0 6px; font-size: 1rem; }
+    p { margin: 5px 0; color: var(--muted); }
+    code { font-family: ui-monospace, monospace; font-size: .85em; }
+
+    .badge { display: inline-block; font-size: .74rem; padding: 2px 6px; border-radius: 999px; border: 1px solid #3f4f79; }
+
+    .support-list { margin: 0; padding-left: 18px; font-size: .88rem; }
+    .support-list li { margin: 2px 0; }
+
+    .anchor-wrap { position: relative; padding-top: 26px; }
+    .anchor-target {
+      anchor-name: --point;
+      background: #2a3a61;
+      border-radius: 10px;
+      padding: 4px 10px;
+      display: inline-block;
+    }
+    .anchored {
+      position: absolute;
+      position-anchor: --point;
+      top: anchor(bottom);
+      left: anchor(left);
+      translate: 0 6px;
+      background: #114e4a;
+      color: #d1fae5;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: .82rem;
+    }
+
+    dialog {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      color: var(--txt);
+      background: #0a1328;
+    }
+
+    #hint {
+      border: 1px solid #7dd3fc;
+      background: #072f4a;
+      border-radius: 10px;
+      padding: 8px;
+    }
+
+    .carousel {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 86%;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 8px;
+      padding-bottom: 6px;
+    }
+    .carousel::scroll-button(left),
+    .carousel::scroll-button(right) {
+      border: 0;
+      border-radius: 999px;
+      background: #0369a1;
+      color: white;
+      padding: 4px 8px;
+    }
+    .carousel::scroll-marker { content: ""; width: 8px; height: 8px; border-radius: 999px; background: #4b5b88; display: inline-block; }
+    .slide {
+      scroll-snap-align: center;
+      border: 1px solid #2f3f64;
+      background: #0a1223;
+      border-radius: 12px;
+      padding: 10px;
+      min-height: 88px;
+    }
+
+    select.custom {
+      appearance: base-select;
+      border: 1px solid #37476d;
+      border-radius: 10px;
+      background: #091022;
+      color: var(--txt);
+      padding: 8px;
+      width: 100%;
+    }
+
+    .attr-demo { color: attr(data-color color, #f43f5e); }
+
+    .shape-box {
+      margin-top: 8px;
+      height: 100px;
+      background: linear-gradient(120deg, #22d3ee, #818cf8);
+      clip-path: shape(from 0 0, line to 100% 0, curve to 100% 100% with 70% 52%, line to 0 100%, close);
+    }
+
+    .if-layout {
+      display: flex;
+      flex-direction: if(media(orientation: landscape), row, column);
+      gap: 6px;
+    }
+    .if-layout > div { flex: 1; border-radius: 10px; padding: 6px; background: #1c2a4a; }
+
+    @function --negate($val) { result: calc(-1 * $val); }
+    .custom-fn {
+      margin-left: --negate(8px);
+      border-left: 8px solid #0ea5e9;
+      background: #07274b;
+      padding: 6px;
+    }
+
+    @media (width > 700px) {
+      .wide-note { color: #7dd3fc; }
+    }
+
+    .stretch-shell { min-height: 110px; border: 1px dashed #39507a; padding: 8px; }
+    .stretch-box {
+      height: stretch;
+      min-height: 70px;
+      corner-shape: scoop;
+      border-radius: 22px;
+      background: #1f2d4d;
+      padding: 8px;
+    }
+
+    .stack { display: grid; gap: 8px; }
+
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+
+    @container style(--rain > 45%) {
+      .rain-note::after { content: "ON"; color: #86efac; margin-left: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>현대 CSS 20 기능 확장 데모</h1>
+    <nav>
+      <a href="#f1">1-2</a><a href="#f3">3-4</a><a href="#f5">5-6</a><a href="#f7">7-9</a>
+      <a href="#f10">10-12</a><a href="#f13">13-16</a><a href="#f17">17-20</a><a href="#support">지원</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card" id="f1">
+      <h2>1) Invoker Commands + 2) Dialog Light Dismiss</h2>
+      <button command="show-modal" commandfor="demo-dialog">모달 열기</button>
+      <dialog id="demo-dialog" closedby="any">
+        <strong>JS 없이 모달 열기</strong>
+        <p><code>closedby="any"</code>로 배경 클릭 닫기 동작.</p>
+        <form method="dialog"><button>닫기</button></form>
+      </dialog>
+    </section>
+
+    <section class="card" id="f3">
+      <h2>3) Popover Hint + 4) Customizable Select</h2>
+      <div class="stack">
+        <button id="hint-btn" popovertarget="hint">힌트 보기</button>
+        <div id="hint" popover="hint">힌트는 다른 팝오버를 닫지 않습니다.</div>
+        <small id="source-log" class="badge">trigger: -</small>
+        <select class="custom">
+          <option>🚀 Launch</option><option>🎨 Theme</option><option>🧪 Labs</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="card" id="f5">
+      <h2>5) CSS Carousel + 6) Anchor Positioning</h2>
+      <div class="carousel" id="slides">
+        <article class="slide">Slide A</article>
+        <article class="slide">Slide B</article>
+        <article class="slide">Slide C</article>
+      </div>
+      <button id="to-c">C 슬라이드로 이동</button>
+      <div class="anchor-wrap">
+        <span class="anchor-target">앵커 기준점</span>
+        <span class="anchored">anchor(bottom/left)</span>
+      </div>
+    </section>
+
+    <section class="card" id="f7">
+      <h2>7) Scroll Spy + 8) Scroll State + 9) scrollIntoView(container)</h2>
+      <p>상단 내비는 <code>scroll-target-group</code> + <code>:target-current</code>를 사용합니다.</p>
+      <p class="wide-note">헤더는 <code>@container scroll-state(stuck)</code> 스타일 변화를 가집니다.</p>
+    </section>
+
+    <section class="card" id="f10">
+      <h2>10) sibling-index + 11) view-transition-group + 12) moveBefore</h2>
+      <p>카드 등장 지연은 <code>sibling-index()</code> 계산을 사용합니다.</p>
+      <div id="zone-a" class="stack"><video id="movable" controls width="220"></video></div>
+      <div id="zone-b" class="stack"></div>
+      <button id="move-video">moveBefore()로 video 이동</button>
+    </section>
+
+    <section class="card" id="f13">
+      <h2>13) Typed attr + 14) event.source + 15) Textbox trim + 16) shape()</h2>
+      <p class="attr-demo" data-color="#22c55e">typed attr(): data-color로 글자색 설정</p>
+      <p style="text-box-trim: both; text-box-edge: cap alphabetic;">텍스트 상하 여백 정렬</p>
+      <div class="shape-box"></div>
+    </section>
+
+    <section class="card" id="f17">
+      <h2>17) CSS if + 18) @function + 19) Expanded range + 20) stretch/corner-shape</h2>
+      <div class="if-layout"><div>A</div><div>B</div></div>
+      <p class="custom-fn">@function <code>--negate()</code> 재사용</p>
+      <p class="rain-note">@container style(--rain > 45%)</p>
+      <div class="stretch-shell"><div class="stretch-box">height: stretch / corner-shape: scoop</div></div>
+    </section>
+
+    <section class="card" id="support">
+      <h2>지원 상태/폴백 안내(확장)</h2>
+      <ul class="support-list" id="support-list"></ul>
+      <p>실험적 기능 미지원 시 브라우저가 해당 선언을 무시하도록 구성했습니다.</p>
+    </section>
+  </main>
+
+  <script>
+    const supportList = document.getElementById('support-list');
+    const checks = [
+      ['anchor-name', CSS.supports('anchor-name: --x')],
+      ['position-anchor', CSS.supports('position-anchor: --x')],
+      ['popover', 'showPopover' in HTMLElement.prototype],
+      ['dialog', typeof HTMLDialogElement !== 'undefined'],
+      ['appearance: base-select', CSS.supports('appearance: base-select')],
+      ['sibling-index()', CSS.supports('animation-delay: calc(0.1s * sibling-index())')],
+      ['text-box-trim', CSS.supports('text-box-trim: both')],
+      ['shape()', CSS.supports('clip-path: shape(from 0 0, line to 100% 0, close)')],
+      ['if()', CSS.supports('flex-direction: if(media(orientation: landscape), row, column)')],
+      ['height: stretch', CSS.supports('height: stretch')]
+    ];
+    checks.forEach(([name, ok]) => {
+      const li = document.createElement('li');
+      li.innerHTML = `${name}: <span class="${ok ? 'ok' : 'warn'}">${ok ? '지원' : '미지원/실험적'}</span>`;
+      supportList.append(li);
+    });
+
+    document.getElementById('hint')?.addEventListener('toggle', (event) => {
+      document.getElementById('source-log').textContent = `trigger: ${event.source?.id ?? 'unknown'}`;
+    });
+
+    document.getElementById('to-c')?.addEventListener('click', () => {
+      document.querySelectorAll('#slides .slide')[2]?.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+        container: 'nearest'
+      });
+    });
+
+    document.getElementById('move-video')?.addEventListener('click', () => {
+      const node = document.getElementById('movable');
+      const zoneB = document.getElementById('zone-b');
+      if (node && zoneB) {
+        if (typeof zoneB.moveBefore === 'function') zoneB.moveBefore(node, null);
+        else zoneB.append(node);
+      }
+    });
+  </script>
+</body>
+</html>
